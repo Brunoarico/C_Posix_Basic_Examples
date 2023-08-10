@@ -3,39 +3,29 @@
 #include <signal.h>
 #include <unistd.h>
 
-char word[] = "sistema de tempo real";
-int wordLength = sizeof(word) - 1;
-
-void swap(char *a, char *b) {
-    char temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-void generatePermutations(int start) {
-    if (start == wordLength - 1) {
-        printf("%s\n", word);
-        sleep(1);
-        return;
-    }
-    for (int i = start; i < wordLength; ++i) {
-        swap(&word[start], &word[i]);
-        generatePermutations(start + 1);
-        swap(&word[start], &word[i]);
-    }
-}
-
-void handleAlarm() {
-    printf("Geracao de permutacoes interrompida.\n");
-    //alarm(<segundos>)
-    alarm(2);
+void alarm_handler(int signum) {
+    printf("Temporizador expirou! Acao executada.\n");
+    exit(0);
 }
 
 int main() {
-    //signal(<sinal>, <tratador de sinal>)
-    signal(SIGALRM, handleAlarm);  //Tratador de sinal para SIGALRM
-    alarm(2);                      //Configurando o alarme para ocorrer em 2 segundos
-    generatePermutations(0);
-    printf("Fim\n");
+    // Configurar o tratador de sinal para SIGALRM
+    struct sigaction sa;
+    sa.sa_handler = alarm_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if (sigaction(SIGALRM, &sa, NULL) == -1) {
+        perror("Erro ao configurar o tratador de sinal");
+        return 1;
+    }
+
+    alarm(5); // Definir um temporizador para 5 segundos
+    printf("Aguardando a expiracao do temporizador...\n");
+
+    while (1) {
+        // Aguardar indefinidamente ate que o sinal SIGALRM seja recebido
+    }
+
     return 0;
 }
