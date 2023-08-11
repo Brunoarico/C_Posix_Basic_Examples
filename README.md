@@ -7,13 +7,13 @@ O compilador utilizado é o `gcc`, basta tê-lo instalado na máquina.
 
 ## 2. Exemplos
 
-### Sincronizacao
+### sincronizacao.c
 
-Este é um exemplo de implementação de um problema clássico de sincronização chamado "Produtor-Consumidor" usando semáforos em C com POSIX threads. Neste cenário, há um buffer compartilhado entre uma thread produtora e uma thread consumidora. A thread produtora insere itens no buffer, enquanto a thread consumidora retira itens do buffer. A sincronização é realizada usando semáforos para garantir que o produtor e o consumidor não acessem o buffer ao mesmo tempo. O buffer compartilhado é tambem um exemplo de implementação de uma possivel forma de trocar mensagens entre threads. Outro exemplo de possível forma seria por meio de variaveis atomicas, mas isso não é abordado neste exemplo.
+Este é um exemplo de implementação de um problema clássico de sincronização chamado "Produtor-Consumidor" usando semáforos em C com POSIX (Portable Operating System Interface) threads. Neste cenário, há um buffer compartilhado entre uma thread produtora e uma thread consumidora. A thread produtora insere itens no buffer, enquanto a thread consumidora retira itens do buffer. A sincronização é realizada usando semáforos para garantir que o produtor e o consumidor não acessem o buffer ao mesmo tempo. O buffer compartilhado é tambem um exemplo de implementação de uma possivel forma de trocar mensagens entre threads. Outro exemplo de possível forma seria por meio de variaveis atomicas, mas isso não é abordado neste exemplo.
 
 #### Funcionamento
 
-1. O buffer é definido com um tamanho fixo (`BUFFER_SIZE``).
+1. O buffer é definido com um tamanho fixo (`BUFFER_SIZE`).
 2. Duas threads são criadas: uma thread produtora e uma thread consumidora.
 3. A thread produtora gera números aleatórios (`item`) e os insere no buffer. Ela aguarda o semáforo `empty` (que representa espaços vazios no buffer) antes de inserir um item.
 4. A thread consumidora retira itens do buffer e os imprime. Ela aguarda o semáforo `full` (que representa itens no buffer) antes de retirar um item.
@@ -21,7 +21,7 @@ Este é um exemplo de implementação de um problema clássico de sincronizaçã
 6. Os semáforos empty e full são inicializados com os valores apropriados (BUFFER_SIZE e 0, respectivamente) usando `sem_init`.
 7. Após a conclusão das threads, os semáforos são destruídos usando `sem_destroy`.
 
-### Race
+### race.c
 
 Este programa cria duas threads (`tid1` e `tid2`) que executam a função `Count`. A função `Count` realiza um loop onde uma variável tmp é atualizada com o valor atual de `cnt`, depois incrementa tmp e finalmente atualiza `cnt` com o valor de `tmp`.
 
@@ -31,7 +31,17 @@ Se a condição de corrida não ocorrer, o valor de `cnt` será igual a `2 * NIT
 
 **Nota:** Este código é projetado para demonstrar um problema de condição de corrida
 
-### Interrupcao
+### mutex.c
+
+Este código é um exemplo de como o uso de `mutex` pode corrigir uma condição de corrida do codigo `race.c`. O problema original era que duas threads estavam acessando e modificando a variável `cnt` (uma `seção crítica` do código) ao mesmo tempo, causando resultados inconsistentes. O uso de `mutex` corrige esse problema, garantindo que apenas uma thread tenha acesso à variável `cnt` por vez.
+
+1. A variável global `cnt` é compartilhada entre as duas threads `tid1` e `tid2`, que executam a função `Count`.
+2. Antes de acessar e modificar a variável `cnt`, cada thread bloqueia o mutex usando `pthread_mutex_lock(&mutex)`.
+3. Isso garante que apenas uma thread por vez tenha acesso à variável `cnt`.
+4. Após modificar a variável `cnt`, a thread libera o mutex usando `pthread_mutex_unlock(&mutex)`.
+5. Dessa forma, apenas uma thread pode acessar e modificar a variável `cnt` por vez, evitando condições de corrida.
+
+### interrupcao.c
 
 Este código demonstra como usar interrupções temporais (sinais `SIGALRM`) em C POSIX para agendar a execução de uma ação após um intervalo de tempo específico. Vamos dividir o código em partes para uma melhor compreensão.
 
@@ -40,4 +50,4 @@ Este código demonstra como usar interrupções temporais (sinais `SIGALRM`) em 
 3. A função `alarm` é usada para definir um temporizador para 5 segundos. Quando esse tempo expirar, o sinal `SIGALRM` será gerado, o tratador `alarm_handler` será chamado e a mensagem será impressa.
 4. O loop `while(1)` faz com que o programa aguarde indefinidamente até que o sinal `SIGALRM` seja recebido. Nesse ponto, a função `alarm_handler` é chamada, o que resulta na impressão da mensagem e no encerramento do programa.
 
-`Nota:` Este exemplo demonstra o uso de interrupções temporais usando sinais `SIGALRM`. No entanto, tenha em mente que o uso de `while(1)` para aguardar sinais pode não ser a melhor abordagem em cenários reais, pois resultaria em alto consumo de CPU. 
+`Nota:` Este exemplo demonstra o uso de interrupções temporais usando sinais `SIGALRM`. No entanto, perceba que o uso de `while(1)` para aguardar sinais pode não ser a melhor abordagem em cenários reais, pois resultaria em alto consumo de CPU. 

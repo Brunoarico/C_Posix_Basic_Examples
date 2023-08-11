@@ -32,8 +32,8 @@ void *consumer(void *arg) {
 }
 
 int main() {
-    sem_init(&empty, 0, BUFFER_SIZE); // Inicializa o semaforo empty com o valor BUFFER_SIZE
-    sem_init(&full, 0, 0);           // Inicializa o semaforo full com o valor 0
+    sem_init(&empty, 0, BUFFER_SIZE);  // Inicializa o semaforo empty com o valor BUFFER_SIZE
+    sem_init(&full, 0, 0);             // Inicializa o semaforo full com o valor 0
 
     pthread_t producer_thread, consumer_thread;
 
@@ -43,8 +43,8 @@ int main() {
     if (pthread_join(producer_thread, NULL)) exit(1);
     if (pthread_join(consumer_thread, NULL)) exit(1);
 
-    sem_destroy(&empty); // Destroi o semaforo empty
-    sem_destroy(&full); // Destroi o semaforo full
+    sem_destroy(&empty);  // Destroi o semaforo empty
+    sem_destroy(&full);   // Destroi o semaforo full
 
     return 0;
 }
